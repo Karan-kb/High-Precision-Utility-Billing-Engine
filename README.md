@@ -52,16 +52,6 @@ The transaction processing engine was analyzed under continuous traffic streams 
 * Integrate standard distributed verification models (such as exploring a **Two-Phase Commit** or lightweight replication setup) to coordinate balances safely across separated cluster nodes.
 * Evaluate **Write-Ahead Logging (WAL)** strategies to guarantee local storage history survival during abrupt background server crashes.
 
----
-
-## 🛠️ Repository Directory Layout
-
-The codebase maps to clean functional directories, separating task queue rules, balance calculations, and incoming validation gates:
-*   📁 **`src/Core/`** — Main transaction calculations, billing balance updates, and account history records.
-*   📁 **`src/Queue/`** — Redis background jobs configuration, worker triggers, and exception handling.
-*   📁 **`src/Security/`** — Webhook signature checks and secure digital payload validation rules.
-
----
 
 ## ⚙️ Development Stack Primitives
 
