@@ -87,7 +87,7 @@ Set up a standard operating configuration file (`.env`) inside the root folder t
 Run your base application dependencies, execute the table schema migrations, and activate the background ledger task processors:
 ```bash
 composer install
-php artisan queue:work --queue=ledger_transactions
+php artisan queue:work
 ```
 
 ---
