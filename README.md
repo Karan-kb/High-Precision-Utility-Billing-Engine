@@ -1,98 +1,90 @@
-# ⚡ State-Persistent Transaction Engine for High-Precision Asynchronous Ledgers
+# ⚡ Asynchronous Billing Queue and Balance Ledger Engine
 
-This repository contains the architecture and core implementation files for an event-driven transactional processor. The system is engineered as an empirical testbed for investigating **Race Condition Mitigation**, **State-Persistent Ledger Mechanics**, and **Cryptographic Integrity Verification** within asynchronous, high-concurrency event-driven infrastructures.
+This repository contains the architecture and core processing code for an event-driven transaction ledger. The project functions as a practical testbed to evaluate **Race Condition Mitigation**, **Stateful Balance Processing**, and **Payload Validation** within asynchronous, high-concurrency background queues.
 
-The primary research focus is analyzing structural data consistency, fault-tolerant token processing, and latency constraints when executing stateful calculations under heavy distributed queue loads.
+The primary development goal is to maintain absolute financial ledger consistency and prevent data corruption when handling rapid, simultaneous balance updates under heavy queue loads.
 
 ---
 
-### 📐 Event-Driven Ledger Routing Architecture
+### 📐 Queue Management & Balance Ledger Architecture
 
 ```mermaid
 graph TD
-    A[Dynamic External Webhook Input] --> B[Cryptographic Signature Verification Layer]
-    B -->|Verified Payload| C[Decoupled In-Memory Broker - Redis Cluster]
-    C --> D[Asynchronous Ledger Task Queue Workers]
-    D --> E{Distributed Transaction Coordinator}
-    E -->|State 1: Escrow| F[(Advance Credit Escrow Injections)]
-    E -->|State 2: Compounding| G[(Compounding Late Fine Engine)]
-    E -->|State 3: Ledger Sync| H[(Stateful Arrears Balance Log)]
-    F --> I[Empirical Data Ingestion Logs]
+    A[External Webhook Request] --> B[Webhook Signature Verification]
+    B -->|Verified Payload| C[Redis In-Memory Task Queue]
+    C --> D[Asynchronous Background Workers]
+    D --> E{Transaction Update Logic}
+    E -->|Step 1: Escrow| F[(Credit Escrow Storage)]
+    E -->|Step 2: Fines| G[(Late Fee Calculations)]
+    E -->|Step 3: Balance Sync| H[(Main Outstanding Ledger)]
+    F --> I[System Action Logs]
     G --> I
     H --> I
 ```
 
 ---
 
-## 🔬 Core Systems Research & Infrastructure Focus
+## 🔬 Core Systems Engineering Focus
 
-Processing high-precision billing ledgers asynchronously requires architectural solutions that eliminate data corruption hazards, floating-point numeric drifts, and database serialization deadlocks.
+Processing account balances asynchronously requires targeted software structures to completely eliminate data collision hazards, floating-point rounding errors, and database table serialization deadlocks.
 
-### 1. Asynchronous Concurrency & Race Condition Control
-The framework utilizes an isolated worker architecture designed to process stateful mathematical ledger entries without introducing data mutation hazards:
-* **Decoupled Queue Workers:** Leverages in-memory key-value data structures (**Redis Cache Workers**) to buffer incoming traffic, preventing transaction drops and system resource exhaustion during massive ingestion spikes.
-* **Transaction Serialization Primitives:** Implements isolated row-level database locking and strict execution sequencing to ensure that balance calculations (escrow injections, compounding fines, outstanding arrears) evaluate deterministically even if processes arrive simultaneously.
+### 1. Asynchronous Task Control & Race Condition Mitigation
+The framework utilizes isolated background workers designed to process sequential database updates without causing conflicting data changes:
+* **Background Task Buffering:** Uses in-memory data streams (**Redis Queue Workers**) to store incoming webhook requests, safely preventing transaction drops or database thread exhaustion during major traffic spikes.
+* **Row-Level Database Locking:** Implements strict database write sequencing to ensure balance math operations evaluate accurately, even if multiple updates for the same client account arrive at the exact same millisecond.
 
-### 2. Cryptographic Security & Ledger Ingestion Integrity
-To guarantee that data mutations originating from external systems are authentic and uncorrupted, the entry gate incorporates cryptographic processing constraints:
-* **Cryptographically Signed Payloads:** Every incoming event message is validated through a custom webhook verification node using secure digital signatures, providing a sandbox environment for testing distributed zero-trust integration points.
-* **Deterministic Decimal Accuracy:** Bypasses standard floating-point representation limits by implementing exact precision numeric schemas, which prevents micro-rounding errors across thousands of compounding ledger steps.
-
----
-
-## 📊 Telemetry Benchmarks & Algorithmic Complexity
-
-The execution lifecycle of the ledger compute node was evaluated under severe data traffic spikes to isolate structural boundaries:
-
-### 1. System Complexity Metrics
-* **Time Complexity Analysis:** State resolution, validation hooks, and queue ingest routing execute deterministically at a flat operational footprint of O(1).
-* **Throughput Capacity Constraints:** Validated to continuously ingest, queue, and process heavy transaction streams without message dropping, transaction leakage, or locking deadlocks.
-
-### 2. Experimental Telemetry Matrix
-
-| Ingestion Core Phase | Telemetry Baseline Profile | Core Architectural Dependency |
-| :--- | :--- | :--- |
-| **Cryptographic Handshake Verification** | ~8.45 ms | CPU Bound (Hash/Signature Validation) |
-| **Redis Queue Dispatch & Enqueue** | ~1.20 ms | Network Memory Bandwidth Bound |
-| **Stateful Ledger Mutation Execution** | ~22.60 ms | Database I/O Bound (Atomic Locks) |
-
-### 3. Future Lab Extensions & Research Directions
-* Integrate formal distributed validation consensus protocols (e.g., a lightweight **Raft** or **Two-Phase Commit (2PC)** configuration) to coordinate transaction state commits safely across physically separated cluster nodes.
-* Evaluate the implementation of structural **Write-Ahead Logging (WAL)** patterns to achieve absolute storage durability profiles against sudden node environment crashes.
+### 2. Payload Security & Exact Math Precision
+To ensure incoming balances originating from external integrations are authentic and error-free, the ingest gateway enforces strict validation rules:
+* **Signed Payload Verification:** Incoming webhook events are validated using secure digital signatures to confirm authenticity before hitting the core storage engine.
+* **Exact Decimal Accuracy:** Bypasses floating-point variable limits by enforcing exact precision database schemas, preventing tiny fraction rounding errors from multiplying across thousands of sequential transactions.
 
 ---
 
-## 🛠️ Decoupled Project Structure Layout
+## 📊 System Complexity & Processing Limits
 
-The code hierarchy maps cleanly to standard system primitives separating task allocation blocks, core calculations, and data ingestion gateways:
-*   📁 **`src/Core/`** — Houses primary ledger calculation math routines, compounding state loops, and escrow injection nodes.
-*   📁 **`src/Queue/`** — Controls the background job routing, Redis workers configuration, and dead-letter queue exception trapping.
-*   📁 **`src/Security/`** — Isolates the webhook cryptographic validation checks and signature authentication filters.
+The transaction processing engine was analyzed under continuous traffic streams to document runtime behavior constraints.
 
----
+### 1. Process Complexity Metrics
+* **Execution Footprint:** Core context verification, database lookups, and queue dispatches run predictably, resolving at a steady O(1) time complexity cost.
+* **System Stability:** Built to ingest and process transaction streams continuously without dropping data packets, leaking states, or hitting table locking deadlocks.
 
-## ⚙️ Core Technical Platform & System Boundaries
-
-* **Core Execution Engine:** PHP 8.x (Advanced Asynchronous Task Optimization Configurations)
-* **High-Throughput In-Memory Broker:** Redis (Database-Backed Task Queue Caching Core)
-* **Relational Persistence Store:** MySQL (Optimized Precision Decimal Data Schemas)
-* **API Validation Endpoint Infrastructure:** Secure Cryptographically Signed Webhooks
+### 2. Planned Development Extensions
+* Integrate standard distributed verification models (such as exploring a **Two-Phase Commit** or lightweight replication setup) to coordinate balances safely across separated cluster nodes.
+* Evaluate **Write-Ahead Logging (WAL)** strategies to guarantee local storage history survival during abrupt background server crashes.
 
 ---
 
-## 🚀 Replicating the Experimental Research Sandbox
+## 🛠️ Repository Directory Layout
 
-### Step 1: Clone the Framework Files
+The codebase maps to clean functional directories, separating task queue rules, balance calculations, and incoming validation gates:
+*   📁 **`src/Core/`** — Main transaction calculations, billing balance updates, and account history records.
+*   📁 **`src/Queue/`** — Redis background jobs configuration, worker triggers, and exception handling.
+*   📁 **`src/Security/`** — Webhook signature checks and secure digital payload validation rules.
+
+---
+
+## ⚙️ Development Stack Primitives
+
+* **Language Engine:** PHP 8.x (Optimized background processing setups)
+* **Task Broker:** Redis (Asynchronous background task processing queue)
+* **Relational Storage:** MySQL (Optimized exact precision decimal fields)
+* **Validation Gateway:** Secure Cryptographically Signed Webhooks
+
+---
+
+## 🚀 Setting Up the Local Testing Sandbox
+
+### Step 1: Clone the Repository
 ```bash
-git clone https://github.com
+git clone https://github.com/Karan-kb/High-Precision-Utility-Billing-Engine.git
 cd High-Precision-Utility-Billing-Engine
 ```
 
-### Step 2: Initialize Runtime Configuration Settings
-Construct your virtual runtime variables schema (`.env`) to mirror local Redis infrastructure nodes and precision relational database configurations.
+### Step 2: Configure Environment Settings
+Set up a standard operating configuration file (`.env`) inside the root folder to map your local database paths and Redis server credentials.
 
-### Step 3: Instantiate System Workers
-Initialize structural configurations, execute the core ledger relational structural migrations, and spin up background task processors:
+### Step 3: Start the Queue Workers
+Run your base application dependencies, execute the table schema migrations, and activate the background ledger task processors:
 ```bash
 composer install
 php artisan queue:work --queue=ledger_transactions
@@ -100,6 +92,6 @@ php artisan queue:work --queue=ledger_transactions
 
 ---
 
-## 👨‍💻 Primary Researcher
+## 👨‍💻 Maintainer
 
-* **Karan B.C.** - Systems Design Specialist | [GitHub Profile](https://github.com/Karan-kb) | [💼 LinkedIn Profile](https://www.linkedin.com/in/karan-b-c-2162a81b8/)
+* **Karan B.C.** - Backend Software Engineer | [GitHub Profile](https://github.com/Karan-kb) | [LinkedIn Profile](https://www.linkedin.com/in/karan-b-c-2162a81b8/)
